@@ -15,7 +15,10 @@ const ScanQRScreen = ({ navigation, route }) => {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    navigation.replace("FinalPayment", {
+      type: type,
+      data: data,
+    });
   };
 
   if (hasPermission === null) {
@@ -31,6 +34,7 @@ const ScanQRScreen = ({ navigation, route }) => {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
+      <Text>{scanned ? "True" : "False"}</Text>
       {scanned && <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />}
     </View>
   );

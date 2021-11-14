@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 const FinalPaymentScreen = ({ navigation, route }) => {
   return (
     <View>
-      <Text>This is final Screen</Text>
+      <Text>{route.params.data}</Text>
     </View>
   );
 };
