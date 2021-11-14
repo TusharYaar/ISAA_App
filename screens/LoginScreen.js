@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 
 import { StyleSheet, Alert } from "react-native";
-import {
-  Button,
-  Headline,
-  Subheading,
-  TextInput,
-  Title,
-} from "react-native-paper";
+import { Button, Headline, Subheading, TextInput, Title } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import * as Crypto from "expo-crypto";
@@ -38,25 +32,24 @@ const LoginScreen = () => {
     setIsLoading(true);
     try {
       const { accountNo, password } = details;
-      const encryptedPassword = await Crypto.digestStringAsync(
-        Crypto.CryptoDigestAlgorithm.SHA256,
-        password
-      );
-      const response = await fetch(
-        `https://mockback.herokuapp.com/6188a1b800f84800157ac2ab/r/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            accountNo,
-            encryptedPassword,
-          }),
-        }
-      );
-      const responseJson = await response.json();
-      if (response.status === 200) {
+      const encryptedPassword = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
+      // ! Enable Back
+      // const response = await fetch(
+      //   `https://mockback.herokuapp.com/6188a1b800f84800157ac2ab/r/login`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({
+      //       accountNo,
+      //       encryptedPassword,
+      //     }),
+      //   }
+      // );
+      // const responseJson = await response.json();
+      // if (response.status === 200 ) {
+      if (true) {
         dispatch(loginUser({ accountNo, password, encryptedPassword }));
       } else throw new Error(responseJson.message);
     } catch (error) {
@@ -85,12 +78,7 @@ const LoginScreen = () => {
         disabled={isLoading}
         right={<TextInput.Icon name="eye" onPress={togglePasswordVisible} />}
       />
-      <Button
-        mode="contained"
-        style={styles.button}
-        disabled={isLoading}
-        onPress={handleSubmit}
-      >
+      <Button mode="contained" style={styles.button} disabled={isLoading} onPress={handleSubmit}>
         Login
       </Button>
     </SafeAreaView>
