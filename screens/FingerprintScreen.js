@@ -20,7 +20,6 @@ const FingerprintScreen = ({ navigation, route }) => {
       // await LocalAuthentication.authenticateAsync();
     } catch (e) {
       Alert.alert("Error", e.message);
-      console.log(e);
     }
   }, [LocalAuthentication]);
   useEffect(() => {

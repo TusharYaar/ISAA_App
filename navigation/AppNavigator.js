@@ -8,8 +8,8 @@ import { PaymentStack } from "./StackNavigator";
 import { useSelector } from "react-redux";
 
 const AppNavigator = () => {
-  const { accountNo } = useSelector((state) => state);
-  if (accountNo.length == 0) return <LoginScreen />;
+  const { accountNumber } = useSelector((state) => state);
+  if (accountNumber.length == 0) return <LoginScreen />;
   else return <PaymentStack />;
 };
 

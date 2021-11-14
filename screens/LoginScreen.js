@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { StyleSheet, Alert } from "react-native";
 import { Button, Headline, Subheading, TextInput, Title } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as Crypto from "expo-crypto";
 import { useDispatch } from "react-redux";
@@ -12,11 +14,21 @@ import { loginUser } from "../store/actions";
 const LoginScreen = () => {
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
-    accountNo: "",
+    accountNumber: "",
     password: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [passwordVisible, setPasswordVisible] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const user_details = await AsyncStorage.getItem("@user_details");
+      if (user_details !== null) {
+        const { accountNumber, password, encryptedPassword } = JSON.parse(user_details);
+        dispatch(loginUser({ accountNumber, password, encryptedPassword }));
+      } else setIsLoading(false);
+    })();
+  }, [AsyncStorage]);
 
   const handleDetailsChange = (key, value) => {
     setDetails((details) => {
@@ -31,7 +43,7 @@ const LoginScreen = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const { accountNo, password } = details;
+      const { accountNumber, password } = details;
       const encryptedPassword = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
       // ! Enable Back
       // const response = await fetch(
@@ -42,7 +54,7 @@ const LoginScreen = () => {
       //       "Content-Type": "application/json",
       //     },
       //     body: JSON.stringify({
-      //       accountNo,
+      //       accountNumber,
       //       encryptedPassword,
       //     }),
       //   }
@@ -50,7 +62,9 @@ const LoginScreen = () => {
       // const responseJson = await response.json();
       // if (response.status === 200 ) {
       if (true) {
-        dispatch(loginUser({ accountNo, password, encryptedPassword }));
+        const jsonValue = JSON.stringify({ accountNumber, password, encryptedPassword });
+        await AsyncStorage.setItem("@user_details", jsonValue);
+        dispatch(loginUser({ accountNumber, password, encryptedPassword }));
       } else throw new Error(responseJson.message);
     } catch (error) {
       Alert.alert("Error", error.message);
@@ -64,8 +78,8 @@ const LoginScreen = () => {
       <Title>ISAA Project</Title>
       <Subheading style={styles.subheading}>Account Number</Subheading>
       <TextInput
-        value={details.accountNo}
-        onChangeText={(text) => handleDetailsChange("accountNo", text)}
+        value={details.accountNumber}
+        onChangeText={(text) => handleDetailsChange("accountNumber", text)}
         label="Account Number"
         disabled={isLoading}
       />

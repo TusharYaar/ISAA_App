@@ -2,7 +2,7 @@ import { LOGIN } from "./actions";
 const initialUserState = {
   password: "",
   encryptedPassword: "",
-  accountNo: "",
+  accountNumber: "",
 };
 
 export default (state = initialUserState, { type, payload }) => {
