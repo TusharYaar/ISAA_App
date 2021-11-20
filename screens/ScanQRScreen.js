@@ -4,9 +4,13 @@ import { BarCodeScanner } from "expo-barcode-scanner";
 
 import { Button, Title } from "react-native-paper";
 
+import { useDispatch } from "react-redux";
+import { setStep } from "../store/actions";
+
 const ScanQRScreen = ({ navigation, route }) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     (async () => {
@@ -17,6 +21,7 @@ const ScanQRScreen = ({ navigation, route }) => {
 
   const handleBarCodeScanned = ({ type = "QR", data = { accountNumber: 123123, amount: 34234 } }) => {
     setScanned(true);
+    dispatch(setStep(3));
     navigation.replace("FinalPayment", {
       type: type,
       data: data,

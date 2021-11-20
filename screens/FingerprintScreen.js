@@ -2,11 +2,13 @@ import React, { useEffect, useCallback, useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 
 import { Button, Title } from "react-native-paper";
-
+import { useDispatch } from "react-redux";
+import { setStep } from "../store/actions";
 import * as LocalAuthentication from "expo-local-authentication";
 
 const FingerprintScreen = ({ navigation }) => {
   const [canAuthenticate, setCanAuthenticate] = useState(null);
+  const dispatch = useDispatch();
   const authenticate = useCallback(async () => {
     try {
       const hasAccess = await LocalAuthentication.hasHardwareAsync();
@@ -15,6 +17,7 @@ const FingerprintScreen = ({ navigation }) => {
         setCanAuthenticate(true);
         const { success } = await LocalAuthentication.authenticateAsync();
         if (success) {
+          dispatch(setStep(2));
           navigation.reset({
             index: 0,
             routes: [{ name: "QR" }],
