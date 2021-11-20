@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 
-import { Title } from "react-native-paper";
+import { Button, Title } from "react-native-paper";
 
 const ScanQRScreen = ({ navigation, route }) => {
   const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
+  const [scanned, setScanned] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -15,7 +15,7 @@ const ScanQRScreen = ({ navigation, route }) => {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = ({ type = "QR", data = { accountNumber: 123123, amount: 34234 } }) => {
     setScanned(true);
     navigation.replace("FinalPayment", {
       type: type,
@@ -24,22 +24,34 @@ const ScanQRScreen = ({ navigation, route }) => {
   };
 
   if (hasPermission === null) {
-    return <Title>Requesting for camera permission</Title>;
+    return <Title style={styles.title}>Requesting for camera permission</Title>;
   }
   if (hasPermission === false) {
-    return <Title>No access to camera</Title>;
+    return <Title style={styles.title}>No access to camera</Title>;
   }
 
-  return (
-    <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
-      />
-      <Text>{scanned ? "True" : "False"}</Text>
-      {scanned && <Button title={"Tap to Scan Again"} onPress={() => setScanned(false)} />}
-    </View>
-  );
+  if (hasPermission && scanned) {
+    return (
+      <View style={styles.container}>
+        <Button onPress={handleBarCodeScanned} mode="contained">
+          Move Forward
+        </Button>
+        <Button onPress={() => setScanned(false)} mode="contained">
+          Scan QR
+        </Button>
+      </View>
+    );
+  }
+  if (hasPermission && !scanned) {
+    return (
+      <View style={styles.container}>
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          style={StyleSheet.absoluteFillObject}
+        />
+      </View>
+    );
+  }
 };
 
 export default ScanQRScreen;
@@ -47,5 +59,8 @@ export default ScanQRScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  title: {
+    textAlign: "center",
   },
 });
