@@ -33,7 +33,10 @@ const LoginScreen = ({ navigation, route }) => {
         const encryptedPassword = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
         setDetails({ accountNumber, password });
         dispatch(loginUser({ accountNumber, password, encryptedPassword }));
-        navigation.navigate("Fingerprint");
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Fingerprint" }],
+        });
       } else setIsLoading(false);
     })();
   }, [SecureStore]);

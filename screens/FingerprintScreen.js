@@ -15,21 +15,13 @@ const FingerprintScreen = ({ navigation }) => {
         setCanAuthenticate(true);
         const { success } = await LocalAuthentication.authenticateAsync();
         if (success) {
-          Alert.alert("Authenticated!", "Successfully authenticated!", [
-            {
-              text: "OK",
-              onPress: () =>
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: "QR" }],
-                }),
-            },
-          ]);
-        } else Alert.alert("Authentication Failed!", "Authentication Failed, please try again");
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "QR" }],
+          });
+        } else Alert.alert("Authentication Failed!", "Please try again");
       } else setCanAuthenticate(false);
-    } catch (err) {
-      Alert.alert("Error", err.message);
-    }
+    } catch (err) {}
   }, [LocalAuthentication]);
   useEffect(() => {
     authenticate();
