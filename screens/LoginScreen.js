@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
-import { StyleSheet, Alert } from "react-native";
+import { StyleSheet, Alert, View } from "react-native";
 import { Button, Headline, Subheading, TextInput, Title } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 
 import * as Crypto from "expo-crypto";
 import { useDispatch } from "react-redux";
 
 import { loginUser } from "../store/actions";
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
     accountNumber: "",
@@ -20,15 +20,23 @@ const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [passwordVisible, setPasswordVisible] = useState(true);
 
+  const handleServerVerification = useCallback(() => {
+    const { accountNumber, password } = details;
+    const data = { accountNumber, password };
+  }, [details]);
+
   useEffect(() => {
     (async () => {
-      const user_details = await AsyncStorage.getItem("@user_details");
-      if (user_details !== null) {
-        const { accountNumber, password, encryptedPassword } = JSON.parse(user_details);
+      const accountNumber = await SecureStore.getItemAsync("accountNumber");
+      const password = await SecureStore.getItemAsync("password");
+      if (accountNumber && password) {
+        const encryptedPassword = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
+        setDetails({ accountNumber, password });
         dispatch(loginUser({ accountNumber, password, encryptedPassword }));
+        navigation.navigate("Fingerprint");
       } else setIsLoading(false);
     })();
-  }, [AsyncStorage]);
+  }, [SecureStore]);
 
   const handleDetailsChange = (key, value) => {
     setDetails((details) => {
@@ -62,9 +70,10 @@ const LoginScreen = () => {
       // const responseJson = await response.json();
       // if (response.status === 200 ) {
       if (true) {
-        const jsonValue = JSON.stringify({ accountNumber, password, encryptedPassword });
-        await AsyncStorage.setItem("@user_details", jsonValue);
+        await SecureStore.setItemAsync("accountNumber", accountNumber);
+        await SecureStore.setItemAsync("password", password);
         dispatch(loginUser({ accountNumber, password, encryptedPassword }));
+        navigation.navigate("Fingerprint");
       } else throw new Error(responseJson.message);
     } catch (error) {
       Alert.alert("Error", error.message);
@@ -73,7 +82,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.screen}>
+    <View style={styles.screen}>
       <Headline>Login</Headline>
       <Title>ISAA Project</Title>
       <Subheading style={styles.subheading}>Account Number</Subheading>
@@ -95,7 +104,7 @@ const LoginScreen = () => {
       <Button mode="contained" style={styles.button} disabled={isLoading} onPress={handleSubmit}>
         Login
       </Button>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -1,16 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 
-import { View } from "react-native";
-import LoginScreen from "../screens/LoginScreen";
+import { View, StyleSheet } from "react-native";
+
+import Stepper from "../components/Stepper";
 
 import { PaymentStack } from "./StackNavigator";
 
-import { useSelector } from "react-redux";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 const AppNavigator = () => {
-  const { accountNumber } = useSelector((state) => state);
-  if (accountNumber.length == 0) return <LoginScreen />;
-  else return <PaymentStack />;
+  return (
+    <SafeAreaView style={styles.screen}>
+      <Stepper />
+      <View style={styles.container}>
+        <PaymentStack />
+      </View>
+    </SafeAreaView>
+  );
 };
 
 export default AppNavigator;
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+});
