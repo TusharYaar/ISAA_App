@@ -1,6 +1,6 @@
 import React from "react";
 
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, KeyboardAvoidingView } from "react-native";
 
 import Stepper from "../components/Stepper";
 
@@ -11,9 +11,9 @@ const AppNavigator = () => {
   return (
     <SafeAreaView style={styles.screen}>
       <Stepper />
-      <View style={styles.container}>
+      <KeyboardAvoidingView behaviors="height" style={styles.container}>
         <PaymentStack />
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -23,6 +23,7 @@ export default AppNavigator;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    backgroundColor: "#F2F2F2",
   },
   container: {
     flex: 1,

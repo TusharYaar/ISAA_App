@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 
 import { StyleSheet, Alert, View } from "react-native";
 import { Button, Headline, Subheading, TextInput, Title } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 import * as SecureStore from "expo-secure-store";
 
@@ -17,7 +16,7 @@ const LoginScreen = ({ navigation, route }) => {
     accountNumber: "",
     password: "",
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(true);
 
   const handleServerVerification = useCallback(() => {
@@ -27,6 +26,7 @@ const LoginScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     (async () => {
+      setIsLoading(true);
       const accountNumber = await SecureStore.getItemAsync("accountNumber");
       const password = await SecureStore.getItemAsync("password");
       if (accountNumber && password) {
@@ -75,7 +75,7 @@ const LoginScreen = ({ navigation, route }) => {
       if (true) {
         await SecureStore.setItemAsync("accountNumber", accountNumber);
         await SecureStore.setItemAsync("password", password);
-        dispatch(loginUser({ accountNumber, password, encryptedPassword }));
+        dispatch(loginUser({ accountNumber, password, encryptedPassword, currentStep: 1 }));
         navigation.navigate("Fingerprint");
       } else throw new Error(responseJson.message);
     } catch (error) {
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   subheading: {
-    marginTop: 30,
+    marginTop: 20,
   },
   button: {
     marginTop: 30,

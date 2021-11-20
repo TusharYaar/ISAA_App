@@ -11,3 +11,7 @@ export const setStep = (payload) => ({
   type: SET_STEP,
   payload,
 });
+
+export const logout = () => ({
+  type: LOGOUT,
+});
