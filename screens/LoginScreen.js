@@ -13,26 +13,26 @@ import { loginUser } from "../store/actions";
 const LoginScreen = ({ navigation, route }) => {
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
-    accountNumber: "",
-    password: "",
+    username: "yash",
+    password: "1234",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(true);
 
   const handleServerVerification = useCallback(() => {
-    const { accountNumber, password } = details;
-    const data = { accountNumber, password };
+    const { username, password } = details;
+    const data = { username, password };
   }, [details]);
 
   useEffect(() => {
     (async () => {
       setIsLoading(true);
-      const accountNumber = await SecureStore.getItemAsync("accountNumber");
+      const username = await SecureStore.getItemAsync("username");
       const password = await SecureStore.getItemAsync("password");
-      if (accountNumber && password) {
+      if (username && password) {
         const encryptedPassword = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
-        setDetails({ accountNumber, password });
-        dispatch(loginUser({ accountNumber, password, encryptedPassword, currentStep: 1 }));
+        setDetails({ username, password });
+        dispatch(loginUser({ username, password, encryptedPassword, currentStep: 1 }));
         navigation.reset({
           index: 0,
           routes: [{ name: "Fingerprint" }],
@@ -54,32 +54,28 @@ const LoginScreen = ({ navigation, route }) => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const { accountNumber, password } = details;
+      const { username, password } = details;
       const encryptedPassword = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
       // ! Enable Back
-      // const response = await fetch(
-      //   `https://mockback.herokuapp.com/6188a1b800f84800157ac2ab/r/login`,
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       accountNumber,
-      //       encryptedPassword,
-      //     }),
-      //   }
-      // );
-      // const responseJson = await response.json();
-      // if (response.status === 200 ) {
-      if (true) {
-        await SecureStore.setItemAsync("accountNumber", accountNumber);
+      let formdata = new FormData();
+      formdata.append("username", username);
+      formdata.append("password", password);
+      const response = await fetch(
+        `https://c54f-49-36-37-140.ngrok.io/mobile_login?username=${username}&password=${password}`,
+        {
+          method: "GET",
+          mode: "cors",
+        }
+      );
+      if (response.status === 200) {
+        // if (true) {
+        await SecureStore.setItemAsync("username", username);
         await SecureStore.setItemAsync("password", password);
-        dispatch(loginUser({ accountNumber, password, encryptedPassword, currentStep: 1 }));
+        dispatch(loginUser({ username, password, encryptedPassword, currentStep: 1 }));
         navigation.navigate("Fingerprint");
-      } else throw new Error(responseJson.message);
+      } else throw new Error("Invalid Credentials");
     } catch (error) {
-      Alert.alert("Error", error.message);
+      // Alert.alert("Error", error.message);
       setIsLoading(false);
     }
   };
@@ -88,11 +84,11 @@ const LoginScreen = ({ navigation, route }) => {
     <View style={styles.screen}>
       <Headline>Login</Headline>
       <Title>ISAA Project</Title>
-      <Subheading style={styles.subheading}>Account Number</Subheading>
+      <Subheading style={styles.subheading}>User Name</Subheading>
       <TextInput
-        value={details.accountNumber}
-        onChangeText={(text) => handleDetailsChange("accountNumber", text)}
-        label="Account Number"
+        value={details.username}
+        onChangeText={(text) => handleDetailsChange("username", text)}
+        label="User Name"
         disabled={isLoading}
       />
       <Subheading style={styles.subheading}>Password</Subheading>
