@@ -1,7 +1,7 @@
 import { LOGIN, SET_STEP, LOGOUT } from "./actions";
 const initialUserState = {
+  baseUrl: "https://5764-49-36-37-140.ngrok.io",
   password: "",
-  encryptedPassword: "",
   accountNumber: "",
   currentStep: 0,
 };

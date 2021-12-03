@@ -38,9 +38,7 @@ const ScanQRScreen = ({ navigation, route }) => {
   if (hasPermission && scanned) {
     return (
       <View style={styles.container}>
-        <Button onPress={handleBarCodeScanned} mode="contained">
-          Move Forward
-        </Button>
+        <Button onPress={handleBarCodeScanned}> Move </Button>
         <Button onPress={() => setScanned(false)} mode="contained">
           Scan QR
         </Button>

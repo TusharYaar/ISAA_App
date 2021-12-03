@@ -6,11 +6,12 @@ import { Button, Headline, Subheading, TextInput, Title } from "react-native-pap
 import * as SecureStore from "expo-secure-store";
 
 import * as Crypto from "expo-crypto";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { loginUser } from "../store/actions";
 
 const LoginScreen = ({ navigation, route }) => {
+  const { baseUrl } = useSelector((state) => state);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
     username: "yash",
@@ -19,9 +20,17 @@ const LoginScreen = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(true);
 
-  const handleServerVerification = useCallback(() => {
+  const handleServerVerification = useCallback(async () => {
     const { username, password } = details;
-    const data = { username, password };
+    console.log(`${baseUrl}/mobile_login?username=${username}&password=${password}`);
+    try {
+      const response = await fetch(`${baseUrl}/mobile_login?username=${username}&password=${password}`);
+      if (response.status === 200) return true;
+      else throw new Error("Invalid credentials");
+    } catch (error) {
+      Alert.alert("Error", error.message);
+      return false;
+    }
   }, [details]);
 
   useEffect(() => {
@@ -30,13 +39,14 @@ const LoginScreen = ({ navigation, route }) => {
       const username = await SecureStore.getItemAsync("username");
       const password = await SecureStore.getItemAsync("password");
       if (username && password) {
-        const encryptedPassword = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
-        setDetails({ username, password });
-        dispatch(loginUser({ username, password, encryptedPassword, currentStep: 1 }));
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Fingerprint" }],
-        });
+        const response = await handleServerVerification();
+        if (response) {
+          dispatch(loginUser({ username, password, currentStep: 1 }));
+          navigation.reset({
+            index: 0,
+            routes: [{ name: "Fingerprint" }],
+          });
+        }
       } else setIsLoading(false);
     })();
   }, [SecureStore]);
@@ -53,30 +63,17 @@ const LoginScreen = ({ navigation, route }) => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    try {
-      const { username, password } = details;
-      const encryptedPassword = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, password);
-      // ! Enable Back
-      let formdata = new FormData();
-      formdata.append("username", username);
-      formdata.append("password", password);
-      const response = await fetch(
-        `https://c54f-49-36-37-140.ngrok.io/mobile_login?username=${username}&password=${password}`,
-        {
-          method: "GET",
-          mode: "cors",
-        }
-      );
-      if (response.status === 200) {
-        // if (true) {
-        await SecureStore.setItemAsync("username", username);
-        await SecureStore.setItemAsync("password", password);
-        dispatch(loginUser({ username, password, encryptedPassword, currentStep: 1 }));
-        navigation.navigate("Fingerprint");
-      } else throw new Error("Invalid Credentials");
-    } catch (error) {
-      // Alert.alert("Error", error.message);
+    const { username, password } = details;
+    const response = await handleServerVerification();
+    if (response) {
+      await SecureStore.setItemAsync("username", username);
+      await SecureStore.setItemAsync("password", password);
+      dispatch(loginUser({ username, password, currentStep: 1 }));
       setIsLoading(false);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Fingerprint" }],
+      });
     }
   };
 
