@@ -5,12 +5,11 @@ import { Button, Headline, Subheading, TextInput, Title } from "react-native-pap
 
 import * as SecureStore from "expo-secure-store";
 
-import * as Crypto from "expo-crypto";
 import { useDispatch, useSelector } from "react-redux";
 
 import { loginUser } from "../store/actions";
 
-const LoginScreen = ({ navigation, route }) => {
+const LoginScreen = ({ navigation }) => {
   const { baseUrl } = useSelector((state) => state);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
@@ -22,7 +21,6 @@ const LoginScreen = ({ navigation, route }) => {
 
   const handleServerVerification = useCallback(async () => {
     const { username, password } = details;
-    console.log(`${baseUrl}/mobile_login?username=${username}&password=${password}`);
     try {
       const response = await fetch(`${baseUrl}/mobile_login?username=${username}&password=${password}`);
       if (response.status === 200) return true;

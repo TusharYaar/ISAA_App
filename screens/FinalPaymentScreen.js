@@ -5,23 +5,23 @@ import { Title, Button } from "react-native-paper";
 
 import { useSelector } from "react-redux";
 
-const BASE_URL = "http://5764-49-36-37-140.ngrok.io";
-
 const FinalPaymentScreen = ({ navigation, route }) => {
-  const { username, password } = useSelector((state) => state);
+  const { username, password, baseUrl } = useSelector((state) => state);
   const [state, setState] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const confirmPayment = async () => {
     setIsLoading(true);
-    await fetch(
-      `${BASE_URL}/confirm_mobile_payment?code=${route.params.code}&username=${username}&password=${password}`
+    const response = await fetch(
+      `${baseUrl}/confirm_mobile_payment?code=${route.params.code}&username=${username}&password=${password}`
     );
-    setState("Payment Sucessful");
+    if (response.status === 200) setState("Payment Sucessful");
+    else setState("Payment Failed, Transaction Cancelled");
+
     setIsLoading(false);
   };
   const cancelPayment = async () => {
     setIsLoading(true);
-    const response = await fetch(`${BASE_URL}/cancel_mobile_payment?username=${username}&password=${password}`);
+    const response = await fetch(`${baseUrl}/cancel_mobile_payment?username=${username}&password=${password}`);
     if (response.status === 200) {
       setState("Payment Cancelled");
     }
