@@ -19,12 +19,12 @@ const ScanQRScreen = ({ navigation, route }) => {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type = "QR", data = { accountNumber: 123123, amount: 34234 } }) => {
+  const handleBarCodeScanned = ({ type = "QR", data }) => {
     setScanned(true);
     dispatch(setStep(3));
     navigation.replace("FinalPayment", {
       type: type,
-      data: data,
+      code: data,
     });
   };
 
@@ -38,7 +38,7 @@ const ScanQRScreen = ({ navigation, route }) => {
   if (hasPermission && scanned) {
     return (
       <View style={styles.container}>
-        <Button onPress={handleBarCodeScanned}> Move </Button>
+        {/* <Button onPress={handleBarCodeScanned}> Move </Button> */}
         <Button onPress={() => setScanned(false)} mode="contained">
           Scan QR
         </Button>

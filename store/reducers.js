@@ -1,6 +1,6 @@
 import { LOGIN, SET_STEP, LOGOUT } from "./actions";
 const initialUserState = {
-  baseUrl: "https://5764-49-36-37-140.ngrok.io",
+  baseUrl: "https://still-ridge-89709.herokuapp.com",
   password: "",
   accountNumber: "",
   currentStep: 0,

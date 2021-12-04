@@ -12,10 +12,12 @@ const FinalPaymentScreen = ({ navigation, route }) => {
   const confirmPayment = async () => {
     setIsLoading(true);
     const response = await fetch(
-      `${baseUrl}/confirm_mobile_payment?code=${route.params.code}&username=${username}&password=${password}`
+      `${baseUrl}/confirm_mobile_payment?code=${
+        route.params.code || "a117hcs"
+      }&username=${username}&password=${password}`
     );
     if (response.status === 200) setState("Payment Sucessful");
-    else setState("Payment Failed, Transaction Cancelled");
+    else setState("Payment Failed, Try Again");
 
     setIsLoading(false);
   };
