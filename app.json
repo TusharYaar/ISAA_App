@@ -26,7 +26,10 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.tusharyaar.isaa_app",
-      "permissions": [],
+      "permissions": [
+        "USE_BIOMETRIC",
+        "CAMERA"
+      ],
       "versionCode": 1
     },
     "web": {

@@ -13,8 +13,8 @@ const LoginScreen = ({ navigation }) => {
   const { baseUrl } = useSelector((state) => state);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({
-    username: "yash",
-    password: "1234",
+    username: "",
+    password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(true);
